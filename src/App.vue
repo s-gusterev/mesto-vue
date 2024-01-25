@@ -4,6 +4,7 @@ import api from "./utils/api.js";
 import Header from "./components/Header.vue";
 import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
+import ImagePopup from "./components/ImagePopup.vue";
 
 const currentUser = reactive({
   name: "",
@@ -13,6 +14,12 @@ const currentUser = reactive({
 });
 
 const cards = ref([]);
+
+const selectedCard = ref({
+  isOpen: false,
+  link: "",
+  name: "",
+});
 
 const getUser = async () => {
   try {
@@ -54,6 +61,14 @@ const handleCardDelete = async (card) => {
   }
 };
 
+const handleCardClick = (card) => {
+  selectedCard.value = {
+    isOpen: true,
+    name: card.name,
+    link: card.link,
+  };
+};
+
 onMounted(async () => {
   await getUser();
   await getCards();
@@ -66,7 +81,15 @@ provide("cards", cards);
 <template>
   <div class="root__container">
     <Header />
-    <Main @like-card="handleCardLike" @delete-card="handleCardDelete" />
+    <Main
+      @like-card="handleCardLike"
+      @delete-card="handleCardDelete"
+      @open-image="handleCardClick"
+    />
     <Footer />
+    <ImagePopup
+      :card="selectedCard"
+      :on-close="() => (selectedCard.isOpen = false)"
+    />
   </div>
 </template>

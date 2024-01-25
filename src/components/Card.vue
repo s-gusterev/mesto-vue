@@ -38,7 +38,8 @@ const handleCardClick = () => {
       <h2 class="card__title">{{ props.card.name }}</h2>
       <div class="card__like-section">
         <button
-          :class="isLiked ? 'card__like card__like_active' : 'card__like'"
+          class="card__like"
+          :class="{ card__like_active: isLiked }"
           type="button"
           @click="handleCardlike"
         ></button>
