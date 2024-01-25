@@ -1,4 +1,11 @@
 <script setup>
+import { inject } from "vue";
+
+const user = inject("currentUser");
+const cards = inject("cards");
+
+const emit = defineEmits(["likeCard", "deleteCard", "openImage"]);
+
 import Card from "./Card.vue";
 </script>
 <template>
@@ -7,9 +14,7 @@ import Card from "./Card.vue";
       <div class="profile__info">
         <div
           class="profile__avatar"
-          style="
-            background-image: url('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png');
-          "
+          :style="{ backgroundImage: `url(${user.avatar})` }"
         >
           <button
             class="profile__btn-edit-avatar"
@@ -18,8 +23,8 @@ import Card from "./Card.vue";
           ></button>
         </div>
         <div class="profile__name">
-          <h1 class="profile__title">{user.name}</h1>
-          <p class="profile__subtitle">{user.about}</p>
+          <h1 class="profile__title">{{ user.name }}</h1>
+          <p class="profile__subtitle">{{ user.about }}</p>
           <button
             class="profile__btn-edit-profile"
             type="button"
@@ -33,9 +38,14 @@ import Card from "./Card.vue";
         ></button>
       </div>
       <ul class="cards">
-        <Card />
-        <Card />
-        <Card />
+        <Card
+          v-for="card in cards"
+          :key="card._id"
+          :card="card"
+          @like-card="emit('likeCard', card)"
+          @delete-card="emit('deleteCard', card)"
+          @open-image="emit('openImage', card)"
+        />
       </ul>
     </section>
   </main>
