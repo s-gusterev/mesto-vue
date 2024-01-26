@@ -7,7 +7,7 @@ import Footer from "./components/Footer.vue";
 import ImagePopup from "./components/ImagePopup.vue";
 import EditAvatarPopup from "./components/EditAvatarPopup.vue";
 import AddPlacePopup from "./components/AddPlacePopup.vue";
-
+import EditProfilePopup from "./components/EditProfilePopup.vue";
 const currentUser = reactive({
   name: "",
   about: "",
@@ -25,6 +25,7 @@ const selectedCard = ref({
 
 const isEditAvatarPopupOpen = ref(false);
 const isAddPlacePopupOpen = ref(false);
+const isEditProfilePopupOpen = ref(false);
 
 // открытие и закрытие попапов--------
 const openEditAvatarPopup = () => {
@@ -35,10 +36,15 @@ const openAddPlacePopup = () => {
   isAddPlacePopupOpen.value = true;
 };
 
+const openEditProfilePopup = () => {
+  isEditProfilePopupOpen.value = true;
+};
+
 const closeAllPopups = () => {
   selectedCard.value.isOpen = false;
   isEditAvatarPopupOpen.value = false;
   isAddPlacePopupOpen.value = false;
+  isEditProfilePopupOpen.value = false;
 };
 // открытие и закрытие попапов--------
 
@@ -108,8 +114,21 @@ const handleAddPlaceSubmit = async (card) => {
     const { name, link } = card;
 
     const addPlace = await api.addCard(name, link);
-    console.log(addPlace);
     cards.value = [addPlace, ...cards.value];
+    closeAllPopups();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// обновление профиля
+const handleUpdateUser = async (user) => {
+  try {
+    const { name, about } = user;
+
+    const updateUser = await api.editProfile(name, about);
+    currentUser.name = updateUser.name;
+    currentUser.about = updateUser.about;
     closeAllPopups();
   } catch (error) {
     console.log(error);
@@ -134,6 +153,7 @@ provide("cards", cards);
       @open-image="handleCardClick"
       @open-edit-avatar="openEditAvatarPopup"
       @open-add-place="openAddPlacePopup"
+      @open-edit-profile="openEditProfilePopup"
     />
     <Footer />
     <ImagePopup :card="selectedCard" :on-close="closeAllPopups" />
@@ -147,6 +167,12 @@ provide("cards", cards);
       :is-open="isAddPlacePopupOpen"
       @on-close="closeAllPopups"
       @on-submit="handleAddPlaceSubmit"
+    />
+
+    <EditProfilePopup
+      :is-open="isEditProfilePopupOpen"
+      @on-close="closeAllPopups"
+      @on-submit="handleUpdateUser"
     />
   </div>
 </template>

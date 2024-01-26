@@ -10,6 +10,7 @@ const emit = defineEmits([
   "openImage",
   "openEditAvatar",
   "openAddPlace",
+  "openEditProfile",
 ]);
 </script>
 <template>
@@ -34,6 +35,7 @@ const emit = defineEmits([
             class="profile__btn-edit-profile"
             type="button"
             aria-label="Редактировать данные профиля"
+            @click="emit('openEditProfile')"
           ></button>
         </div>
         <button

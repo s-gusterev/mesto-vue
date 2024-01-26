@@ -11,7 +11,6 @@ const avatar = ref("");
 const emit = defineEmits(["onSubmit", "onClose"]);
 
 const handleSubmit = () => {
-  console.log("onSubmit");
   emit("onSubmit", avatar.value);
   avatar.value = "";
 };
