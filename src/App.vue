@@ -6,6 +6,7 @@ import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
 import ImagePopup from "./components/ImagePopup.vue";
 import EditAvatarPopup from "./components/EditAvatarPopup.vue";
+import AddPlacePopup from "./components/AddPlacePopup.vue";
 
 const currentUser = reactive({
   name: "",
@@ -23,15 +24,21 @@ const selectedCard = ref({
 });
 
 const isEditAvatarPopupOpen = ref(false);
+const isAddPlacePopupOpen = ref(false);
 
 // открытие и закрытие попапов--------
 const openEditAvatarPopup = () => {
   isEditAvatarPopupOpen.value = true;
 };
 
+const openAddPlacePopup = () => {
+  isAddPlacePopupOpen.value = true;
+};
+
 const closeAllPopups = () => {
   selectedCard.value.isOpen = false;
   isEditAvatarPopupOpen.value = false;
+  isAddPlacePopupOpen.value = false;
 };
 // открытие и закрытие попапов--------
 
@@ -84,6 +91,7 @@ const handleCardClick = (card) => {
   };
 };
 
+// обновление аватара
 const handleUpdateAvatar = async (avatar) => {
   try {
     const updateAvatar = await api.updateAvatar(avatar);
@@ -91,6 +99,20 @@ const handleUpdateAvatar = async (avatar) => {
     closeAllPopups();
   } catch (error) {
     console.log(err);
+  }
+};
+
+// добавление новой карточки
+const handleAddPlaceSubmit = async (card) => {
+  try {
+    const { name, link } = card;
+
+    const addPlace = await api.addCard(name, link);
+    console.log(addPlace);
+    cards.value = [addPlace, ...cards.value];
+    closeAllPopups();
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -111,6 +133,7 @@ provide("cards", cards);
       @delete-card="handleCardDelete"
       @open-image="handleCardClick"
       @open-edit-avatar="openEditAvatarPopup"
+      @open-add-place="openAddPlacePopup"
     />
     <Footer />
     <ImagePopup :card="selectedCard" :on-close="closeAllPopups" />
@@ -119,6 +142,11 @@ provide("cards", cards);
       :is-open="isEditAvatarPopupOpen"
       @on-close="closeAllPopups"
       @on-submit="handleUpdateAvatar"
+    />
+    <AddPlacePopup
+      :is-open="isAddPlacePopupOpen"
+      @on-close="closeAllPopups"
+      @on-submit="handleAddPlaceSubmit"
     />
   </div>
 </template>

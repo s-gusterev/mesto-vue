@@ -9,6 +9,7 @@ const emit = defineEmits([
   "deleteCard",
   "openImage",
   "openEditAvatar",
+  "openAddPlace",
 ]);
 </script>
 <template>
@@ -39,6 +40,7 @@ const emit = defineEmits([
           class="profile__btn-add-place"
           type="button"
           aria-label="Добавить место"
+          @click="emit('openAddPlace')"
         ></button>
       </div>
       <ul class="cards">
