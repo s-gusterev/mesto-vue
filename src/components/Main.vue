@@ -1,12 +1,15 @@
 <script setup>
 import { inject } from "vue";
-
+import Card from "./Card.vue";
 const user = inject("currentUser");
 const cards = inject("cards");
 
-const emit = defineEmits(["likeCard", "deleteCard", "openImage"]);
-
-import Card from "./Card.vue";
+const emit = defineEmits([
+  "likeCard",
+  "deleteCard",
+  "openImage",
+  "openEditAvatar",
+]);
 </script>
 <template>
   <main class="main">
@@ -20,6 +23,7 @@ import Card from "./Card.vue";
             class="profile__btn-edit-avatar"
             type="button"
             aria-label="Редактировать аватар"
+            @click="emit('openEditAvatar')"
           ></button>
         </div>
         <div class="profile__name">

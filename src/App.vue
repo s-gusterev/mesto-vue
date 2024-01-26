@@ -5,6 +5,7 @@ import Header from "./components/Header.vue";
 import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
 import ImagePopup from "./components/ImagePopup.vue";
+import EditAvatarPopup from "./components/EditAvatarPopup.vue";
 
 const currentUser = reactive({
   name: "",
@@ -21,6 +22,20 @@ const selectedCard = ref({
   name: "",
 });
 
+const isEditAvatarPopupOpen = ref(false);
+
+// открытие и закрытие попапов--------
+const openEditAvatarPopup = () => {
+  isEditAvatarPopupOpen.value = true;
+};
+
+const closeAllPopups = () => {
+  selectedCard.value.isOpen = false;
+  isEditAvatarPopupOpen.value = false;
+};
+// открытие и закрытие попапов--------
+
+// получение текущего пользователя
 const getUser = async () => {
   try {
     const user = await api.getProfile();
@@ -32,7 +47,7 @@ const getUser = async () => {
     console.log(error);
   }
 };
-
+// получение карточек
 const getCards = async () => {
   try {
     const initialCards = await api.getInitialCards();
@@ -41,7 +56,7 @@ const getCards = async () => {
     console.log(error);
   }
 };
-
+// отметка карточки лайком
 const handleCardLike = async (card) => {
   try {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
@@ -51,7 +66,7 @@ const handleCardLike = async (card) => {
     console.log(error);
   }
 };
-
+// удаление карточки
 const handleCardDelete = async (card) => {
   try {
     await api.delCard(card._id);
@@ -60,13 +75,23 @@ const handleCardDelete = async (card) => {
     console.log(error);
   }
 };
-
+// клик по карточке (открытие попапа содержимого карточки)
 const handleCardClick = (card) => {
   selectedCard.value = {
     isOpen: true,
     name: card.name,
     link: card.link,
   };
+};
+
+const handleUpdateAvatar = async (avatar) => {
+  try {
+    const updateAvatar = await api.updateAvatar(avatar);
+    currentUser.avatar = updateAvatar.avatar;
+    closeAllPopups();
+  } catch (error) {
+    console.log(err);
+  }
 };
 
 onMounted(async () => {
@@ -85,11 +110,15 @@ provide("cards", cards);
       @like-card="handleCardLike"
       @delete-card="handleCardDelete"
       @open-image="handleCardClick"
+      @open-edit-avatar="openEditAvatarPopup"
     />
     <Footer />
-    <ImagePopup
-      :card="selectedCard"
-      :on-close="() => (selectedCard.isOpen = false)"
+    <ImagePopup :card="selectedCard" :on-close="closeAllPopups" />
+
+    <EditAvatarPopup
+      :is-open="isEditAvatarPopupOpen"
+      @on-close="closeAllPopups"
+      @on-submit="handleUpdateAvatar"
     />
   </div>
 </template>
